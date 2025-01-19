@@ -11,16 +11,20 @@ pipeline {
         stage('Build') {
             steps {
                 // Build inside a Docker container
-                docker.image('node:16-buster-slim').inside('-p 3000:3000') {
-                    sh 'npm install'
+                script {
+                    docker.image('node:16-buster-slim').inside() {
+                        sh 'npm install'
+                    }
                 }
             }
         }
         stage('Test') { 
             steps {
                 // Test step (run your tests inside the Docker container)
-                docker.image('node:16-buster-slim').inside('-p 3000:3000') {
-                    sh './jenkins/scripts/test.sh' 
+                script {
+                    docker.image('node:16-buster-slim').inside() {
+                        sh './jenkins/scripts/test.sh' 
+                    }
                 }
             }
         }

@@ -1,0 +1,3 @@
+[submodule "a428-cicd-labs"]
+	path = a428-cicd-labs
+	url = https://github.com/MPernandes/a428-cicd-labs.git

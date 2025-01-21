@@ -4,7 +4,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout the main repository and initialize submodules
-                git url: 'https://github.com/MPernandes/a428-cicd-labs.git', branch: 'main', poll: false
+                git url: 'https://github.com/MPernandes/a428-cicd-labs.git', branch: 'react-app', poll: false
                 sh 'git submodule update --init --recursive'
             }
         }

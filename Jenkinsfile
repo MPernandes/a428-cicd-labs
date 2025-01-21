@@ -8,6 +8,22 @@ pipeline {
                 sh 'git submodule update --init --recursive'
             }
         }
+        stage('Create package.json') {
+            steps {
+                // Create package.json if it doesn't exist
+                script {
+                    def packageJsonPath = '/var/jenkins_home/workspace/react-app/package.json'
+                    if (!fileExists(packageJsonPath)) {
+                        sh """
+                            cd /var/jenkins_home/workspace/react-app
+                            npm init -y
+                        """
+                    } else {
+                        echo "package.json already exists"
+                    }
+                }
+            }
+        }
         stage('Build') {
             steps {
                 // Build inside a Docker container
@@ -30,4 +46,3 @@ pipeline {
         }
     }
 }
-

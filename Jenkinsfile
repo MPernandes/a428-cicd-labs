@@ -1,23 +1,17 @@
-pipeline {
-    agent {
-        docker {
-            image 'node:lts-buster-slim'
-            args '-p 3000:3000'
-        }
-    }
+node {
     environment {
         CI = 'true'
     }
-    stages {
-        stage('Build') {
-            steps {
-                sh 'npm install'
-            }
+    
+    stage('Build') {
+        docker.image('node:lts-buster-slim').inside('--network=host') {
+            sh 'npm install'
         }
-        stage('Test') {
-            steps {
-                sh './jenkins/scripts/test.sh'
-            }
+    }
+    
+    stage('Test') {
+        docker.image('node:lts-buster-slim').inside('--network=host') {
+            sh './jenkins/scripts/test.sh'
         }
     }
 }

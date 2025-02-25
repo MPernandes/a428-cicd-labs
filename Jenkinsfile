@@ -20,7 +20,7 @@ node {
     }
 
     stage('Deploy') {
-        docker.image('node:lts-buster-slim').inside('--network=host --user root') {
+        docker.image('node:lts-buster-slim').inside('--network=host --user root -v /home/mpernandes/.ssh:/root/.ssh') {
             sh './jenkins/scripts/deliver.sh'
 
             echo 'Aplikasi berjalan selama 1 menit...'
@@ -32,7 +32,8 @@ node {
             sh 'apt-get update && apt-get install -y openssh-client'
             
             echo 'Mengupload hasil build ke EC2...'
- 	    sh 'scp -i /home/mpernandes/.ssh/dicodingmp.pem -r build/* ubuntu@35.93.43.239:/var/www/html/'
+ 	    // sh 'scp -i /home/mpernandes/.ssh/dicodingmp.pem -r build/* ubuntu@35.93.43.239:/var/www/html/'
+        sh 'scp -o StrictHostKeyChecking=no -i /root/.ssh/dicodingmp.pem -r build/* ubuntu@35.93.43.239:/var/www/html/'
 
         }
 

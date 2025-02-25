@@ -20,14 +20,14 @@ node {
     }
 
     stage('Deploy') {
-        docker.image('node:lts-buster-slim').inside('--network=host') {
+        docker.image('node:lts-buster-slim').inside('--network=host --user root') {
             sh './jenkins/scripts/deliver.sh'
 
             echo 'Aplikasi berjalan selama 1 menit...'
             sleep(time: 1, unit: 'MINUTES')
 
             sh './jenkins/scripts/kill.sh'
-            
+
             echo 'Menginstall openssh-client untuk scp...'
             sh 'apt-get update && apt-get install -y openssh-client'
             

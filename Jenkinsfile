@@ -6,6 +6,7 @@ node {
     stage('Build') {
         docker.image('node:lts-buster-slim').inside('--network=host') {
             sh 'npm install'
+            sh 'npm run build'
         }
     }
 
@@ -16,9 +17,7 @@ node {
     }
 
     stage('Manual Approval') {
-          
-            input message: 'Lanjutkan ke tahap Deploy? (Klik "Proceed" untuk lanjut)'
-        
+        input message: 'Lanjutkan ke tahap Deploy? (Klik "Proceed" untuk lanjut)'
     }
 
     stage('Deploy') {
@@ -29,6 +28,12 @@ node {
             sleep(time: 1, unit: 'MINUTES')
 
             sh './jenkins/scripts/kill.sh'
+
+            echo 'Mengupload hasil build ke EC2...'
+ 	    sh 'scp -i /home/mpernandes/.ssh/dicodingmp.pem -r build/* ubuntu@35.93.43.239:/var/www/html/'
+
         }
+
+        echo 'Deploy ke EC2 selesai.'
     }
 }

@@ -20,13 +20,16 @@ node {
     }
 
     stage('Deploy') {
-        docker.image('node:lts-buster-slim').inside('--network=host --user root -v /home/mpernandes/.ssh:/root/.ssh') {
+        docker.image('node:lts-buster-slim').inside('--network=host --user root -v /home/mpernandes/.ssh:/root/.ssh:ro') {
             sh './jenkins/scripts/deliver.sh'
 
             echo 'Aplikasi berjalan selama 1 menit...'
             sleep(time: 1, unit: 'MINUTES')
 
             sh './jenkins/scripts/kill.sh'
+
+            echo 'Cek keberadaan SSH key di Docker container:'
+            sh 'ls -lah /root/.ssh/'
 
             echo 'Menginstall openssh-client untuk scp...'
             sh 'apt-get update && apt-get install -y openssh-client'

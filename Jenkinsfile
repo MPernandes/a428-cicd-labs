@@ -6,7 +6,6 @@ node {
     stage('Build') {
         docker.image('node:lts-buster-slim').inside('--network=host') {
             sh 'npm install'
-            sh 'npm run build'
         }
     }
 

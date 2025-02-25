@@ -17,7 +17,13 @@ node {
     }
 
     stage('Manual Approval') {
+<<<<<<< HEAD
         input message: 'Lanjutkan ke tahap Deploy? (Klik "Proceed" untuk lanjut)'
+=======
+          
+            input message: 'Lanjutkan ke tahap Deploy? (Klik "Proceed" untuk lanjut)'
+        
+>>>>>>> 5993456 (build)
     }
 
     stage('Deploy') {

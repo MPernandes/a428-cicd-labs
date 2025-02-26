@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'node:lts-buster-slim'
-            args '--memory=728m --memory-swap=1g --cpus=1 --user root -p 3000:3000'
+            args '--memory=768m --memory-swap=1g --cpus=1 --user root -p 3000:3000'
         }
     }
     environment {
@@ -11,7 +11,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'npm ci'
+                sh 'npm install'
             }
         }
         stage('Test') {

@@ -1,34 +1,30 @@
-node {
+pipeline {
+    agent {
+        docker {
+            image 'node:lts-buster-slim'
+            args '-p 3000:3000'
+        }
+    }
     environment {
         CI = 'true'
     }
-
-    stage('Build') {
-        docker.image('node:lts-buster-slim').inside('--network=host') {
-            sh 'npm install'
+    stages {
+        stage('Build') {
+            steps {
+                sh 'npm install'
+            }
         }
-    }
-
-    stage('Test') {
-        docker.image('node:lts-buster-slim').inside('--network=host') {
-            sh './jenkins/scripts/test.sh'
+        stage('Test') {
+            steps {
+                sh './jenkins/scripts/test.sh'
+            }
         }
-    }
-
-    stage('Manual Approval') {
-          
-            input message: 'Lanjutkan ke tahap Deploy? (Klik "Proceed" untuk lanjut)'
-        
-    }
-
-    stage('Deploy') {
-        docker.image('node:lts-buster-slim').inside('--network=host') {
-            sh './jenkins/scripts/deliver.sh'
-
-            echo 'Aplikasi berjalan selama 1 menit...'
-            sleep(time: 1, unit: 'MINUTES')
-
-            sh './jenkins/scripts/kill.sh'
+        stage('Deliver') {
+            steps {
+                sh './jenkins/scripts/deliver.sh'
+                input message: 'Finished using the website? (Click "Proceed" to continue)'
+                sh './jenkins/scripts/kill.sh'
+            }
         }
     }
 }

@@ -2,7 +2,7 @@ pipeline {
     agent {
         docker {
             image 'node:lts-buster-slim'
-            args '--memory=512m --memory-swap=768m --cpus=1 --user root -p 3000:3000'
+            args '--memory=728m --memory-swap=1g --cpus=1 --user root -p 3000:3000'
         }
     }
     environment {

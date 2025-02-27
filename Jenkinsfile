@@ -14,7 +14,6 @@ node {
                           rm -rf package-lock.json
                           npm cache clean --force
                           npm install
-                        fi
                     '''
                 }
             }

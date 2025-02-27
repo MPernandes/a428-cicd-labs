@@ -14,7 +14,10 @@ pipeline {
         stage('Build') {
             steps {
                 //sh 'node --max-old-space-size=4096 $(which npm) install'
-                sh 'npm install'
+                sh ''' 
+		npm install
+                npm install @babel/core@^7.22.0 @babel/preset-env@latest --save-dev
+		'''
             }
         }
         stage('Test') {

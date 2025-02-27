@@ -1,39 +1,47 @@
-pipeline {
-    agent {
-        docker {
-            image 'node:lts-buster-slim'
-	    args '-u root'	   
-		// args '--user $(id -u):$(id -g)'
-            //args '--memory=850m --memory-swap=3g --cpus=1 --user root -p 3000:3000'
-        }
-    }
-    environment {
-        CI = 'true'
-    }
-    stages {
+node {
+    def dockerImage = 'node:lts-buster-slim'
+
+    try {
         stage('Build') {
-            steps {
-                //sh 'node --max-old-space-size=4096 $(which npm) install'
-                sh '''
-		export NODE_OPTIONS="--max-old-space-size=4096"
-		rm -rf node_modules package-lock.json
-         	npm cache clean --force 
-		npm install
-                npm install @babel/core@^7.22.0 @babel/preset-env@latest --save-dev
-		'''
+            docker.image(dockerImage).inside('--user root') {
+                withEnv(['CI=true', 'NODE_OPTIONS=--max-old-space-size=4096']) {
+                    sh '''
+                        rm -rf node_modules package-lock.json
+                        npm cache clean --force
+                        npm install
+                        npm install @babel/core@^7.22.0 @babel/preset-env@latest --save-dev
+                    '''
+                }
             }
         }
+
         stage('Test') {
-            steps {
+            docker.image(dockerImage).inside('--user root') {
                 sh './jenkins/scripts/test.sh'
             }
         }
-        stage('Deliver') {
-            steps {
+
+        stage('Manual Approval') {
+            input message: 'Lanjutkan ke tahap Deploy? (Klik "Proceed" untuk lanjut)'
+        }
+
+        stage('Deploy') {
+            docker.image(dockerImage).inside('--user root') {
                 sh './jenkins/scripts/deliver.sh'
-                input message: 'Finished using the website? (Click "Proceed" to continue)'
+
+                echo 'Aplikasi berjalan selama 1 menit...'
+                sleep(time: 1, unit: 'MINUTES')
+
                 sh './jenkins/scripts/kill.sh'
             }
         }
+
+    } catch (Exception e) {
+        echo "❌ Pipeline gagal: ${e}"
+        currentBuild.result = 'FAILURE'
+        throw e
+    } finally {
+        echo '✅ Pipeline selesai.'
     }
 }
+

@@ -56,7 +56,7 @@ node {
 
         stage('Deploy') {
             docker.image(dockerImage).inside('-p 3000:3000 --user root') {
-                withEnv(['NODE_OPTIONS=--max-old-space-size=2048']) {
+                withEnv(['NODE_OPTIONS=--max-old-space-size=2048 --openssl-legacy-provider']) {
                     sh '''
                         echo "🚀 Memulai proses build"
                         npm run build

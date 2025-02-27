@@ -13,8 +13,8 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                sh 'node --max-old-space-size=4096 $(which npm) install'
-                //sh 'npm install'
+                //sh 'node --max-old-space-size=4096 $(which npm) install'
+                sh 'npm install'
             }
         }
         stage('Test') {

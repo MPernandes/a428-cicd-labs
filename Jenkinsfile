@@ -14,7 +14,9 @@ pipeline {
         stage('Build') {
             steps {
                 //sh 'node --max-old-space-size=4096 $(which npm) install'
-                sh ''' 
+                sh '''
+		rm -rf node_modules package-lock.json
+         	npm cache clean --force 
 		npm install
                 npm install @babel/core@^7.22.0 @babel/preset-env@latest --save-dev
 		'''

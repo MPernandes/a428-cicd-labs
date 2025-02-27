@@ -29,8 +29,8 @@ node {
             docker.image(dockerImage).inside('--user root') {
                 sh './jenkins/scripts/deliver.sh'
 
-                echo 'Aplikasi berjalan selama 1 menit...'
-                sleep(time: 1, unit: 'MINUTES')
+                //echo 'Aplikasi berjalan selama 1 menit...'
+                //sleep(time: 1, unit: 'MINUTES')
 
                 //sh './jenkins/scripts/kill.sh'
             }

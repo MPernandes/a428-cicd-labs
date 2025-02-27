@@ -1,15 +1,20 @@
 node {
-    def dockerImage = 'cimg/node:16.20'
+    def dockerImage = 'node:lts'
 
     try {
         stage('Build') {
             docker.image(dockerImage).inside('-p 3000:3000 --user root') {
-                withEnv(['CI=true', 'NODE_OPTIONS=--max-old-space-size=4096']) {
+                withEnv(['CI=true', 'NODE_OPTIONS=--max-old-space-size=2048']) {
                     sh '''
-                        rm -rf node_modules package-lock.json
-                        npm cache clean --force
-                        npm install
-                        npm install @babel/core@^7.22.0 @babel/preset-env@latest --save-dev
+                        # Hanya hapus node_modules jika perlu (lebih cepat)
+                        if [ -d "node_modules" ]; then
+                          echo "✅ node_modules ditemukan, tidak perlu install ulang"
+                        else
+                          echo "🚀 node_modules tidak ditemukan, install ulang"
+                          rm -rf package-lock.json
+                          npm cache clean --force
+                          npm ci
+                        fi
                     '''
                 }
             }
@@ -27,13 +32,15 @@ node {
 
         stage('Deploy') {
             docker.image(dockerImage).inside('-p 3000:3000 --user root') {
-                sh 'npm run build'
-		//sh './jenkins/scripts/deliver.sh'
+                withEnv(['NODE_OPTIONS=--max-old-space-size=2048']) {
+                    sh '''
+                        echo "🚀 Memulai proses build"
+                        npm run build
+                    '''
+                }
 
-                //echo 'Aplikasi berjalan selama 1 menit...'
-                //sleep(time: 1, unit: 'MINUTES')
-
-                //sh './jenkins/scripts/kill.sh'
+                // Opsional: Jalankan deploy script jika ada
+                // sh './jenkins/scripts/deliver.sh'
             }
         }
 

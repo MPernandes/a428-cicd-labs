@@ -6,14 +6,23 @@ node {
             docker.image(dockerImage).inside('-p 3000:3000 --user root') {
                 withEnv(['CI=true', 'NODE_OPTIONS=--max-old-space-size=2048']) {
                     sh '''
-                        # Hanya hapus node_modules jika perlu (lebih cepat)
+                        echo "🚀 Memulai tahap Build"
+
+                        # Periksa apakah node_modules sudah ada
                         if [ -d "node_modules" ]; then
-                          echo "✅ node_modules ditemukan, tidak perlu install ulang"
+                            echo "✅ node_modules ditemukan, melewati instalasi."
                         else
-                          echo "🚀 node_modules tidak ditemukan, install ulang"
-                          rm -rf package-lock.json
-                          npm cache clean --force
-                          npm install
+                            echo "🚀 node_modules tidak ditemukan, memulai instalasi."
+                            rm -rf package-lock.json
+                            npm cache clean --force
+                            npm ci
+                        fi
+
+                        # Pastikan react-scripts terinstall
+                        if [ ! -d "node_modules/react-scripts" ]; then
+                            echo "⚠️ react-scripts tidak ditemukan, menginstall ulang."
+                            npm install react-scripts --save-dev
+                        fi
                     '''
                 }
             }
@@ -21,7 +30,19 @@ node {
 
         stage('Test') {
             docker.image(dockerImage).inside('--user root') {
-                sh './jenkins/scripts/test.sh'
+                withEnv(['CI=true']) {
+                    sh '''
+                        echo "🧪 Menjalankan pengujian."
+
+                        if [ ! -f "./jenkins/scripts/test.sh" ]; then
+                            echo "❌ File test.sh tidak ditemukan."
+                            exit 1
+                        fi
+
+                        chmod +x ./jenkins/scripts/test.sh
+                        ./jenkins/scripts/test.sh
+                    '''
+                }
             }
         }
 
@@ -35,11 +56,16 @@ node {
                     sh '''
                         echo "🚀 Memulai proses build"
                         npm run build
+
+                        # Opsional: Jalankan deploy script jika ada
+                        if [ -f "./jenkins/scripts/deliver.sh" ]; then
+                            chmod +x ./jenkins/scripts/deliver.sh
+                            ./jenkins/scripts/deliver.sh
+                        else
+                            echo "⚠️ deliver.sh tidak ditemukan, melewati tahap deploy."
+                        fi
                     '''
                 }
-
-                // Opsional: Jalankan deploy script jika ada
-                // sh './jenkins/scripts/deliver.sh'
             }
         }
 
@@ -50,5 +76,5 @@ node {
     } finally {
         echo '✅ Pipeline selesai.'
     }
-}
+} 
 

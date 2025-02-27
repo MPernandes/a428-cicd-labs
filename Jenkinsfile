@@ -1,5 +1,5 @@
 node {
-    def dockerImage = 'node:lts-buster-slim'
+    def dockerImage = 'cimg/node:16.20'
 
     try {
         stage('Build') {

@@ -3,7 +3,7 @@ node {
 
     try {
         stage('Build') {
-            docker.image(dockerImage).inside('--user root') {
+            docker.image(dockerImage).inside('-p 3000:3000 --user root') {
                 withEnv(['CI=true', 'NODE_OPTIONS=--max-old-space-size=4096']) {
                     sh '''
                         rm -rf node_modules package-lock.json

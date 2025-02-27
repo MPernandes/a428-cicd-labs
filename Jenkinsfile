@@ -2,7 +2,8 @@ pipeline {
     agent {
         docker {
             image 'node:lts-buster-slim'
-	    args '--user $(id -u):$(id -g)'
+	    args '-u root'	   
+		// args '--user $(id -u):$(id -g)'
             //args '--memory=850m --memory-swap=3g --cpus=1 --user root -p 3000:3000'
         }
     }

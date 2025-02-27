@@ -78,6 +78,8 @@ node {
         currentBuild.result = 'FAILURE'
         throw e
     } finally {
+	//echo 'Menunggu 1 menit agar aplikasi berjalan...'
+        //sleep(time: 1, unit: 'MINUTES')
         echo '✅ Pipeline selesai.'
     }
 } 

@@ -26,8 +26,9 @@ node {
         }
 
         stage('Deploy') {
-            docker.image(dockerImage).inside('--user root') {
-                sh './jenkins/scripts/deliver.sh'
+            docker.image(dockerImage).inside('-p 3000:3000 --user root') {
+                sh 'npm run build'
+		//sh './jenkins/scripts/deliver.sh'
 
                 //echo 'Aplikasi berjalan selama 1 menit...'
                 //sleep(time: 1, unit: 'MINUTES')

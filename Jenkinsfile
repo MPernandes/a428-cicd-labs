@@ -13,7 +13,7 @@ node {
                           echo "🚀 node_modules tidak ditemukan, install ulang"
                           rm -rf package-lock.json
                           npm cache clean --force
-                          npm ci
+                          npm install
                         fi
                     '''
                 }

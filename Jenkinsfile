@@ -15,7 +15,7 @@ node {
                             echo "🚀 node_modules tidak ditemukan, memulai instalasi."
                             rm -rf package-lock.json
                             npm cache clean --force
-                            npm ci
+                            npm install
                         fi
 
                         # Pastikan react-scripts terinstall
@@ -38,7 +38,11 @@ node {
                             echo "❌ File test.sh tidak ditemukan."
                             exit 1
                         fi
-
+			
+			if [ ! -f "node_modules/.bin/react-scripts" ]; then
+        	    	echo "⚠️ react-scripts tidak ditemukan, mencoba install ulang"
+              		npm install
+            		fi
                         chmod +x ./jenkins/scripts/test.sh
                         ./jenkins/scripts/test.sh
                     '''

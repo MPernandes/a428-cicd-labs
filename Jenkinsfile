@@ -15,6 +15,7 @@ pipeline {
             steps {
                 //sh 'node --max-old-space-size=4096 $(which npm) install'
                 sh '''
+		export NODE_OPTIONS="--max-old-space-size=4096"
 		rm -rf node_modules package-lock.json
          	npm cache clean --force 
 		npm install
